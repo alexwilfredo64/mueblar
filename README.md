@@ -2,19 +2,11 @@ TO DO
 
 # Modificaciones en Figma
 ## App
-- Eliminar Sugerencias en **Catalogo**
-- Catalogo a 2 columnas en movil
 - Coleccion por defecto sera **Favoritos**
-- Corregir dimensiones de objetos. Separadas en Ancho, Alto, Largo (Como viñeta donde `Dimensiones es el titulo`)
 - Corregir materiales: Separando en viñetas donde `Materiales` es el titulo.
 - Agregar Selector de colores/variantes en vista de detalles del producto entre el tiulo y las imagenes
 - Vista de coleccion pasa a ser pantalla independiente (en lugar de Perfil)
-- Quitar cantidad en stock
-- El icono de perfil se desplaza a la esquina superior derecha (En lugar de Historial)
-- Eliminar historial
-- Sustituir modal de colecciones por `SELECCION ACTUAL`
-- Cambiar boton color a trasladar (Tipo zoom de camara pero con funcionalidad de alejar o acercar el objeto en el eje frontal)
-- En Perfil `eliminar Notificaciones de Lanzamiento`
+- **COMPLETADO** Cambiar boton color a trasladar (Tipo zoom de camara pero con funcionalidad de alejar o acercar el objeto en el eje frontal)
 
 ## Web
 - Vista de coleccion se refiere a catalogo de categorias
