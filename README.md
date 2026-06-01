@@ -9,6 +9,7 @@ TO DO
 - **COMPLETADO** Cambiar boton color a trasladar (Tipo zoom de camara pero con funcionalidad de alejar o acercar el objeto en el eje frontal)
 
 ## Web
+- Quitar direccion, pais, telefono de `Detalle de Usuario`
 - Vista de coleccion se refiere a catalogo de categorias
 - Agregar Vista de colecciones del usuario
 - Agregar modulo de detalles de producto Excluyendo lo relacionado al AR
