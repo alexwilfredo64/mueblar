@@ -1,0 +1,33 @@
+DROP TABLE IF EXISTS Producto_X_Coleccion;
+
+DROP TABLE IF EXISTS Coleccion;
+
+DROP TABLE IF EXISTS Filtro_Producto;
+
+DROP TABLE IF EXISTS Variacion_X_Atributo;
+
+DROP TABLE IF EXISTS Miniatura;
+
+DROP TABLE IF EXISTS Variacion;
+
+DROP TABLE IF EXISTS Producto_X_Categoria;
+
+DROP TABLE IF EXISTS Producto;
+
+DROP TABLE IF EXISTS Atributo;
+
+DROP TABLE IF EXISTS Tipo_Atributo;
+
+DROP TABLE IF EXISTS Categoria;
+
+DROP TABLE IF EXISTS Rol_Permiso;
+
+DROP TABLE IF EXISTS Permiso;
+
+DROP TABLE IF EXISTS Token_Recuperacion;
+
+DROP TABLE IF EXISTS Bitacora;
+
+DROP TABLE IF EXISTS Usuario;
+
+DROP TABLE IF EXISTS Rol;
