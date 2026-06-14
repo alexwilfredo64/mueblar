@@ -2,7 +2,8 @@ DROP TABLE IF EXISTS Rol;
 
 CREATE TABLE Rol (
 	id_rol BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nombre_rol VARCHAR(100)
+	nombre_rol VARCHAR(100),
+	editable BOOLEAN
 );
 
 DROP TABLE IF EXISTS Usuario;
@@ -13,7 +14,7 @@ CREATE TABLE Usuario (
 	apellido VARCHAR(100) NOT NULL,
 	correo VARCHAR(255) UNIQUE NOT NULL,
 	password_hash TEXT NOT NULL,
-	activo BOOLEAN,
+	habilitado BOOLEAN,
 	id_rol BIGINT,
 
 	CONSTRAINT 	fk_usuario_rol
@@ -104,7 +105,8 @@ DROP TABLE IF EXISTS Producto;
 CREATE TABLE Producto (
 	nombre_modelo VARCHAR(100) PRIMARY KEY,
 	descripcion TEXT NOT NULL,
-	dimensiones JSONB NOT NULL
+	dimensiones JSONB NOT NULL,
+	habilitado BOOLEAN
 );
 
 DROP TABLE IF EXISTS Producto_X_Categoria;
@@ -161,7 +163,8 @@ CREATE TABLE Variacion_X_Atributo (
 	id_variacion VARCHAR(255) NOT NULL,
 	id_atributo VARCHAR(30) NOT NULL,
 	valor_atributo VARCHAR(100) NOT NULL,
-	
+	habilitado BOOLEAN,
+
 	CONSTRAINT fk_variacion_atributo_variacion
 	FOREIGN KEY (id_variacion) REFERENCES Variacion(sku),
 	
@@ -216,3 +219,25 @@ CREATE TABLE Producto_X_Coleccion (
 	CONSTRAINT fk_producto_coleccion_coleccion
 	FOREIGN KEY (id_coleccion) REFERENCES Coleccion(id_coleccion)
 );
+
+DROP TABLE IF EXISTS Metrica_Visualizacion;
+
+CREATE TABLE Metrica_Visualizacion (
+    id_metrica BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario BIGINT NOT NULL,
+    sku_variacion VARCHAR(255) NOT NULL,
+    duracion_segundos INT NOT NULL,
+    dispositivo VARCHAR(50),-- 'Android', 'iOS'
+    creado_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_metrica_usuario 
+        FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) 
+        ON DELETE SET NULL,
+        
+    CONSTRAINT fk_metrica_variacion 
+        FOREIGN KEY (sku_variacion) REFERENCES Variacion(sku)
+);
+
+-- Índice para acelerar los reportes y filtros por fecha (Crucial para el Dashboard)
+DROP INDEX IF EXISTS idx_metrica_fecha;
+CREATE INDEX idx_metrica_fecha ON Metrica_Visualizacion(creado_at);
