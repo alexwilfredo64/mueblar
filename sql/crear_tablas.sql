@@ -136,6 +136,8 @@ CREATE TABLE Variacion (
 	parametros_instaciacion JSONB NOT NULL,
 	ruta_modelo_3d TEXT NOT NULL,
 	precio NUMERIC(10,2),
+	top_ BOOLEAN NOT NULL,
+	habilitado BOOLEAN NOT NULL,
 
 	CONSTRAINT fk_variacion_producto
 	FOREIGN KEY (id_producto) REFERENCES Producto(nombre_modelo),
@@ -150,7 +152,7 @@ CREATE TABLE Miniatura (
 	id_miniatura BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_variacion VARCHAR(255) NOT NULL,
 	url TEXT NOT NULL,
-	top BOOLEAN NOT NULL,
+	top_ BOOLEAN NOT NULL,
 	
 	CONSTRAINT fk_miniatura_variacion
 	FOREIGN KEY (id_variacion) REFERENCES Variacion(sku)
@@ -163,7 +165,6 @@ CREATE TABLE Variacion_X_Atributo (
 	id_variacion VARCHAR(255) NOT NULL,
 	id_atributo VARCHAR(30) NOT NULL,
 	valor_atributo VARCHAR(100) NOT NULL,
-	habilitado BOOLEAN,
 
 	CONSTRAINT fk_variacion_atributo_variacion
 	FOREIGN KEY (id_variacion) REFERENCES Variacion(sku),
