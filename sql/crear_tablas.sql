@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS Rol;
 
 CREATE TABLE Rol (
 	id_rol BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nombre_rol VARCHAR(100),
-	editable BOOLEAN
+	nombre_rol VARCHAR(100) NOT NULL,
+	editable BOOLEAN NOT NULL
 );
 
 DROP TABLE IF EXISTS Usuario;
@@ -14,8 +14,8 @@ CREATE TABLE Usuario (
 	apellido VARCHAR(100) NOT NULL,
 	correo VARCHAR(255) UNIQUE NOT NULL,
 	password_hash TEXT NOT NULL,
-	habilitado BOOLEAN,
-	id_rol BIGINT,
+	habilitado BOOLEAN NOT NULL,
+	id_rol BIGINT NOT NULL,
 
 	CONSTRAINT 	fk_usuario_rol
 	FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
@@ -28,10 +28,10 @@ CREATE TABLE Bitacora (
 	tabla_nombre VARCHAR(100) NOT NULL,
 	operacion VARCHAR(20) NOT NULL,
 	registro_id VARCHAR(255) NOT NULL,
-	volor_anterior JSONB NOT NULL,
+	valor_anterior JSONB NOT NULL,
 	valor_nuevo JSONB NOT NULL,
 	id_usuario BIGINT NOT NULL,
-	creado_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	creado_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
 	CONSTRAINT fk_bitacora_usuario
 	FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
@@ -44,7 +44,7 @@ CREATE TABLE Token_Recuperacion (
 	id_token BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_usuario BIGINT NOT NULL,
 	token_ VARCHAR(6) NOT NULL,
-	creado_at TIMESTAMP,
+	creado_at TIMESTAMP NOT NULL,
 
 	CONSTRAINT fk_token_recuperacion_usuario
 	FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
@@ -87,7 +87,7 @@ DROP TABLE IF EXISTS Tipo_Atributo;
 
 CREATE TABLE Tipo_Atributo (
 	id_tipo_atributo VARCHAR(30) PRIMARY KEY,
-	descripcion TEXT NOT NULL
+	descripcion TEXT
 );
 
 DROP TABLE IF EXISTS Atributo;
@@ -106,7 +106,7 @@ CREATE TABLE Producto (
 	nombre_modelo VARCHAR(100) PRIMARY KEY,
 	descripcion TEXT NOT NULL,
 	dimensiones JSONB NOT NULL,
-	habilitado BOOLEAN
+	habilitado BOOLEAN NOT NULL
 );
 
 DROP TABLE IF EXISTS Producto_X_Categoria;
@@ -135,7 +135,7 @@ CREATE TABLE Variacion (
 	id_producto VARCHAR(100) NOT NULL,
 	parametros_instaciacion JSONB NOT NULL,
 	ruta_modelo_3d TEXT NOT NULL,
-	precio NUMERIC(10,2),
+	precio NUMERIC(10,2) NOT NULL,
 	top_ BOOLEAN NOT NULL,
 	habilitado BOOLEAN NOT NULL,
 
@@ -228,8 +228,8 @@ CREATE TABLE Metrica_Visualizacion (
     id_usuario BIGINT NOT NULL,
     sku_variacion VARCHAR(255) NOT NULL,
     duracion_segundos INT NOT NULL,
-    dispositivo VARCHAR(50),-- 'Android', 'iOS'
-    creado_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    dispositivo VARCHAR(50) NOT NULL,
+    creado_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     CONSTRAINT fk_metrica_usuario 
         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) 
