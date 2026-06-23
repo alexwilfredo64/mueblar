@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/BackendMueblar/BackendMueblar.iml" filepath="$PROJECT_DIR$/BackendMueblar/BackendMueblar.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/Mueblar.iml" filepath="$PROJECT_DIR$/.idea/Mueblar.iml" />
-    </modules>
-  </component>
-</project>
