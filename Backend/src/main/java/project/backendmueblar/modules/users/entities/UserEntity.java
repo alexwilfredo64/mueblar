@@ -9,7 +9,7 @@ import lombok.Setter;
 import project.backendmueblar.modules.auth.RecoveryTokenEntity;
 import project.backendmueblar.modules.interactions.CollectionEntity;
 import project.backendmueblar.modules.interactions.VisualizationMetricsEntity;
-import project.backendmueblar.modules.logs.LogsEntity;
+import project.backendmueblar.modules.logEntry.LogsEntity;
 
 import java.util.List;
 
@@ -55,5 +55,5 @@ public class UserEntity {
     private List<CollectionEntity> collectionEntities;
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LogsEntity>  logsEntities;
+    private List<LogsEntity> logsEntities;
 }
