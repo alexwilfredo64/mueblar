@@ -13,11 +13,20 @@ async function request(path, options = {}) {
   return text ? JSON.parse(text) : null
 }
 
-export const loginUser = (email, password) =>
-  request('/api/auth/login', {
+export const loginUser = async (email, password) => {
+  const data = await request('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password })
   })
+  localStorage.setItem('token', data.token)
+  return data
+}
+
+export const logoutUser = () => {
+  localStorage.removeItem('token')
+}
+
+export const isAuthenticated = () => !!localStorage.getItem('token')
 
 export const registerUser = (name, apellido, email, password) =>
   request('/api/auth/register', {
