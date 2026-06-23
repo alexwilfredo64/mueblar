@@ -46,7 +46,7 @@ export default function RegisterPage() {
     setErrors({})
     try {
       await registerUser(name, apellido, email, password)
-      navigate('/login')
+      navigate('/')
     } catch (err) {
       setErrors(err.message)
     }
