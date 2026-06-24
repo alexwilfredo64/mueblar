@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser } from '../services/authService'
 import { validateEmail, validatePassword, validateName } from '../services/validator'
+import Field from '../components/ui/Field'
+import Button from '../components/ui/Button'
 
 export default function RegisterPage() {
   const [name, setName] = useState('')
-  const [apellido, setApellido] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -17,6 +19,9 @@ export default function RegisterPage() {
 
     const nameError = validateName(name)
     if (nameError) newErrors.name = nameError
+
+    const lastNameError = validateName(lastName)
+    if (lastNameError) newErrors.lastName = lastNameError
 
     const emailError = validateEmail(email)
     if (emailError) newErrors.email = emailError
@@ -35,7 +40,6 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setErrors(null)
 
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
@@ -45,81 +49,92 @@ export default function RegisterPage() {
 
     setErrors({})
     try {
-      await registerUser(name, apellido, email, password)
+      await registerUser(name, lastName, email, password)
       navigate('/')
     } catch (err) {
-      setErrors(err.message)
+      setErrors({ server: err.message })
     }
   }
 
   return (
-    <main>
-      <h1>Crear cuenta</h1>
+    <div className="flex min-h-screen items-center justify-center px-6 pb-20 pt-32">
+      <div className="w-full max-w-md">
+        <h1 className="font-display text-5xl text-ink">Crear cuenta</h1>
+        <p className="mt-3 text-[15px] text-muted">
+          Únete a MueblAR y visualiza el mobiliario en tu espacio.
+        </p>
 
-      <form onSubmit={handleSubmit} noValidate>
-        <div>
-          <label>Nombre</label>
-          <input type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nombre"
-            autoComplete="name"
-          />
-          {errors.name && <p role="alert">{errors.name}</p>}
-        </div>
+        <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+          <div className="grid grid-cols-2 gap-4">
+            <Field
+              label="Nombre"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre"
+              autoComplete="given-name"
+              error={errors.name}
+            />
+            <Field
+              label="Apellido"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Apellido"
+              autoComplete="family-name"
+              error={errors.lastName}
+            />
+          </div>
 
-        <div>
-          <label>Apellido</label>
-          <input type="text"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-            placeholder="Apellido"
-            autoComplete="apellido"
-          />
-          {errors.apellido && <p role="alert">{errors.apellido}</p>}
-        </div>
-
-        <div>
-          <label>Correo electrónico</label>
-          <input type="email"
+          <Field
+            label="Correo electrónico"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="nombre@ejemplo.com"
             autoComplete="email"
+            error={errors.email}
           />
-          {errors.email && <p role="alert">{errors.email}</p>}
-        </div>
 
-        <div>
-          <label>Contraseña</label>
-          <input type="password"
+          <Field
+            label="Contraseña"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Mínimo 8 caracteres"
             autoComplete="new-password"
+            error={errors.password}
           />
-          {errors.password && <p role="alert">{errors.password}</p>}
-        </div>
 
-        <div>
-          <label>Confirmar contraseña</label>
-          <input type="password"
+          <Field
+            label="Confirmar contraseña"
+            type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Repite tu contraseña"
             autoComplete="new-password"
+            error={errors.confirm}
           />
-          {errors.confirm && <p role="alert">{errors.confirm}</p>}
+
+          {errors.server && (
+            <p role="alert" className="text-sm text-red-400/90">
+              {errors.server}
+            </p>
+          )}
+
+          <Button type="submit" variant="primary" size="lg" fullWidth>
+            Crear cuenta
+          </Button>
+        </form>
+
+        <div className="mt-8 border-t border-line pt-6 text-center text-sm text-muted">
+          ¿Ya tienes cuenta?{' '}
+          <Link
+            to="/login"
+            className="text-copper-light underline underline-offset-4 hover:text-copper"
+          >
+            Inicia sesión
+          </Link>
         </div>
-
-        <button type="submit">
-          Entrar
-        </button>
-      </form>
-
-      <p>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-      </p>
-    </main>
+      </div>
+    </div>
   )
 }

@@ -1,0 +1,62 @@
+import { useId } from 'react'
+
+/*
+  Campo de formulario reutilizable (label + input + error).
+  variant:
+    - "box": input con relleno y borde redondeado (Login / Registro).
+    - "underline": sólo borde inferior (Recuperar contraseña).
+  Mantiene el control en el padre vía value/onChange (componente controlado).
+*/
+
+const BASE =
+  'w-full bg-transparent text-ink placeholder:text-faint focus:outline-none transition-colors'
+
+const VARIANT = {
+  box:
+    'rounded-md border border-line-strong bg-bg-soft/60 px-4 py-3 text-[15px] focus:border-copper',
+  underline:
+    'border-0 border-b border-line-strong px-1 py-2 text-[15px] rounded-none focus:border-copper',
+}
+
+export default function Field({
+  label,
+  type = 'text',
+  value,
+  onChange,
+  placeholder,
+  autoComplete,
+  error,
+  variant = 'box',
+  className = '',
+  ...rest
+}) {
+  const id = useId()
+  return (
+    <div className={className}>
+      {label && (
+        <label
+          htmlFor={id}
+          className="mb-2 block text-[11px] font-medium uppercase tracking-[0.2em] text-muted"
+        >
+          {label}
+        </label>
+      )}
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        aria-invalid={error ? 'true' : undefined}
+        className={`${BASE} ${VARIANT[variant]} ${error ? 'border-red-400/70' : ''}`}
+        {...rest}
+      />
+      {error && (
+        <p role="alert" className="mt-1.5 text-xs text-red-400/90">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
