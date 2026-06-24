@@ -5,7 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.EmailAlreadyExistsException;
+import project.backendmueblar.exception.EmailNotFoundException;
+import project.backendmueblar.exception.PasswordNotMatchWithUserException;
 import project.backendmueblar.exception.RoleNotFoundException;
+import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
 import project.backendmueblar.modules.users.entities.RoleEntity;
 import project.backendmueblar.modules.users.entities.UserEntity;
@@ -45,5 +48,17 @@ public class AuthService {
         repositoryUser.save(userEntity);
     }
 
+    public String loginUser(UserAuthDTO userAuthDTO){
+        Optional<UserEntity> user = repositoryUser.findByEmail(userAuthDTO.getEmail());
+        if(!(user.isPresent())){
+            throw new EmailNotFoundException(String.format("Invalid Email", userAuthDTO.getEmail()));
+        }
 
+        if (!passwordEncoder.matches(userAuthDTO.getPassword(), user.get().getPasswordHash())) {
+            throw new PasswordNotMatchWithUserException("Incorrect Password");
+        }
+
+
+
+    }
 }
