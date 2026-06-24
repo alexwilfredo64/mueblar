@@ -1,15 +1,13 @@
-import { useNavigate } from 'react-router-dom'
+import Hero from '../components/home/Hero'
+import LidarSection from '../components/home/LidarSection'
+import CategoryShowcase from '../components/home/CategoryShowcase'
 
-function HomePage() {
-    const navigate = useNavigate()
-
-    return (
-        <div>
-        <h1>Home</h1>
-        <button onClick={() => navigate('/login')}>Iniciar Sesión</button>
-        <button onClick={() => navigate('/register')}>Registro</button>
-        </div>
-    )
+export default function HomePage() {
+  return (
+    <>
+      <Hero />
+      <LidarSection />
+      <CategoryShowcase />
+    </>
+  )
 }
-
-export default HomePage
