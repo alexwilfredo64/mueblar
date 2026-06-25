@@ -35,7 +35,7 @@ public class LogsEntity {
     private String externalRegisterId;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "valor_anterior", columnDefinition = "jsonb", nullable = false)
+    @Column(name = "volor_anterior", columnDefinition = "jsonb", nullable = false)
     private Map<String, Object> previousValues;
 
     @JdbcTypeCode(SqlTypes.JSON)
