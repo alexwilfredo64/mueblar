@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser } from '../services/authService'
 import { validateEmail, validatePassword, validateName } from '../services/validator'
+import { useAuth } from '../context/AuthContext'
 import Field from '../components/ui/Field'
 import Button from '../components/ui/Button'
 
 export default function RegisterPage() {
+  const { login } = useAuth()
   const [name, setName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -50,6 +52,7 @@ export default function RegisterPage() {
     setErrors({})
     try {
       await registerUser(name, lastName, email, password)
+      await login(email, password)
       navigate('/')
     } catch (err) {
       setErrors({ server: err.message })
