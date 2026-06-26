@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import Logo from './Logo'
 import Button from '../ui/Button'
 import { User, LogOut } from '../ui/icons'
@@ -60,9 +60,13 @@ function UserActions({ user, onLogout }) {
   )
 }
 
+const AUTH_ROUTES = ['/login', '/register', '/forgot-password']
+
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const hideNav = AUTH_ROUTES.includes(pathname)
 
   function handleLogout() {
     logout() // limpia estado + borra token
@@ -74,15 +78,17 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-5 md:px-10">
         <Logo />
 
-        <ul className="hidden items-center gap-10 md:flex">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <NavLink to={link.to} className={navLinkClass}>
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        {!hideNav && (
+          <ul className="hidden items-center gap-10 md:flex">
+            {NAV_LINKS.map((link) => (
+              <li key={link.label}>
+                <NavLink to={link.to} className={navLinkClass}>
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="flex items-center gap-2.5">
           <Button
