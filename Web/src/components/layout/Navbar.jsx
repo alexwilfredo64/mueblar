@@ -85,11 +85,6 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2.5">
-          {isAuthenticated ? (
-            <UserActions user={user} onLogout={handleLogout} />
-          ) : (
-            <GuestActions />
-          )}
           <Button
             to="/descargar"
             variant="outline"
@@ -98,6 +93,11 @@ export default function Navbar() {
           >
             Descargar
           </Button>
+          {isAuthenticated ? (
+            <UserActions user={user} onLogout={handleLogout} />
+          ) : (
+            <GuestActions />
+          )}
         </div>
       </nav>
     </header>
