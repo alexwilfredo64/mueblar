@@ -41,6 +41,29 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Expo / React Native build and cache directories
+.expo/
+.metro/
+dist/
+web-build/
+
+# iOS specific artifacts
+ios/Pods/
+ios/build/
+*.xcworkspace/
+*.xcuserdata/
+*.xcresult/
+DerivedData/
+
+# Android specific artifacts
+android/.gradle/
+android/
+android/app
+android/app/build/
+android/build/
+*.keystore
+*.jks
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
