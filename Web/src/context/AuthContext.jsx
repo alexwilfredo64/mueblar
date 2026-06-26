@@ -1,66 +1,35 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import {
-  loginUser,
-  logoutUser,
-  getCurrentUser,
-  getToken
-} from '../services/authService'
-
-/*
-  Estado global de autenticación (React Context).
-  Expone el usuario actual y las acciones login/logout/refresh.
-  - Al montar, si hay token en localStorage, hidrata el usuario desde la API.
-  - login() guarda el token y carga el perfil.
-  - logout() borra el token y limpia el estado.
-*/
+import { createContext, useContext, useState, useCallback } from 'react'
+import { loginUser, logoutUser, getToken } from '../services/authService'
 
 const AuthContext = createContext(null)
 
+const USER_KEY = 'auth_user'
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  // Hidratación inicial: si hay token guardado, recupera el perfil
-  useEffect(() => {
-    let active = true
-
-    async function hydrate() {
-      if (!getToken()) {
-        setLoading(false)
-        return
-      }
-      try {
-        const data = await getCurrentUser()
-        if (active) setUser(data)
-      } catch {
-        logoutUser() // token inválido/expirado
-      } finally {
-        if (active) setLoading(false)
-      }
+  const [user, setUser] = useState(() => {
+    if (!getToken()) return null
+    try {
+      const stored = localStorage.getItem(USER_KEY)
+      return stored ? JSON.parse(stored) : null
+    } catch {
+      return null
     }
-
-    hydrate()
-    return () => {
-      active = false
-    }
-  }, [])
+  })
+  const loading = false
 
   const login = useCallback(async (email, password) => {
-    await loginUser(email, password) // guarda el token en localStorage
-    const data = await getCurrentUser() // lee el perfil enviando el token
-    setUser(data)
-    return data
+    const data = await loginUser(email, password)
+    const userData = { ...data }
+    delete userData.token 
+    localStorage.setItem(USER_KEY, JSON.stringify(userData))
+    setUser(userData)
+    return userData
   }, [])
 
   const logout = useCallback(() => {
-    logoutUser() // borra el token de localStorage
+    logoutUser()
+    localStorage.removeItem(USER_KEY)
     setUser(null)
-  }, [])
-
-  const refreshUser = useCallback(async () => {
-    const data = await getCurrentUser()
-    setUser(data)
-    return data
   }, [])
 
   const value = {
@@ -69,7 +38,6 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     login,
     logout,
-    refreshUser,
     setUser
   }
 

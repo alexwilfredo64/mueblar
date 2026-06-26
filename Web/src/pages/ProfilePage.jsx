@@ -30,8 +30,8 @@ export default function ProfilePage() {
   const { user, loading, setUser } = useAuth()
   
   const [form, setForm] = useState(() => ({
-    nombre: user?.nombre ?? '',
-    apellido: user?.apellido ?? '',
+    name: user?.name ?? '',
+    lastName: user?.lastName ?? '',
     email: user?.email ?? '',
     password: '',
     confirm: ''
@@ -56,8 +56,8 @@ export default function ProfilePage() {
     setSaving(true)
     try {
       const payload = {
-        nombre: form.nombre,
-        apellido: form.apellido,
+        name: form.name,
+        lastName: form.lastName,
         email: form.email,
         ...(form.password ? { password: form.password } : {})
       }
@@ -97,15 +97,15 @@ export default function ProfilePage() {
           <form onSubmit={handleSubmit} noValidate className="mt-10">
             <div className="grid gap-6 md:grid-cols-2">
               <Field
-                label="Nombre"
-                value={form.nombre}
-                onChange={update('nombre')}
+                label="name"
+                value={form.name}
+                onChange={update('name')}
                 autoComplete="given-name"
               />
               <Field
-                label="Apellido"
-                value={form.apellido}
-                onChange={update('apellido')}
+                label="lastName"
+                value={form.lastName}
+                onChange={update('lastName')}
                 autoComplete="family-name"
               />
 
@@ -158,8 +158,8 @@ export default function ProfilePage() {
                 size="md"
                 onClick={() =>
                   setForm({
-                    nombre: user.nombre ?? '',
-                    apellido: user.apellido ?? '',
+                    name: user.name ?? '',
+                    lastName: user.lastName ?? '',
                     email: user.email ?? '',
                     password: '',
                     confirm: ''
