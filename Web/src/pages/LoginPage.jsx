@@ -31,10 +31,15 @@ export default function LoginPage() {
 
     setErrors({})
     try {
-      await login(email, password) // actualiza el estado global (navbar reacciona)
+      await login(email, password)
       navigate('/')
     } catch (err) {
-      setErrors({ server: err.message })
+      const status = err.status
+      if (status === 401 || status === 400) setErrors({ server: 'Correo o contraseña incorrectos.' })
+      else if (status === 404) setErrors({ server: 'El correo no está registrado.' })
+      else if (status === 403) setErrors({ server: 'No tenés permisos para acceder.' })
+      else if (status >= 500) setErrors({ server: 'Error del servidor. Intentá de nuevo más tarde.' })
+      else setErrors({ server: 'Correo o contraseña incorrectos.' })
     }
   }
 
