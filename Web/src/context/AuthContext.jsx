@@ -18,9 +18,8 @@ export function AuthProvider({ children }) {
   const loading = false
 
   const login = useCallback(async (email, password) => {
-    const data = await loginUser(email, password)
-    const userData = { ...data }
-    delete userData.token 
+    await loginUser(email, password)
+    const userData = { email }
     localStorage.setItem(USER_KEY, JSON.stringify(userData))
     setUser(userData)
     return userData
