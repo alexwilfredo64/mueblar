@@ -1,18 +1,24 @@
 package project.backendmueblar.modules.auth.services;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.*;
+import project.backendmueblar.modules.auth.RepositoryRecoveryToken;
+import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
+import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
 import project.backendmueblar.modules.users.entities.RoleEntity;
 import project.backendmueblar.modules.users.entities.UserEntity;
 import project.backendmueblar.modules.users.repositories.RepositoryPermission_X_Role;
 import project.backendmueblar.modules.users.repositories.RepositoryRole;
 import project.backendmueblar.modules.users.repositories.RepositoryUser;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RepositoryPermission_X_Role repositoryPermission_X_Role;
     private final JwtService jwtService;
+    private final RepositoryRecoveryToken repositoryRecoveryToken;
 
     @Transactional
     public void registerUser(UserCreateDTO userCreateDTO){
@@ -82,5 +89,21 @@ public class AuthService {
                 ));
 
         return jwtService.generateToken(user, endpointsAndPermissionsMap);
+    }
+
+    public void validateWithEmail(EmailAuthDTO emailAuthDTO) {
+        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
+
+        // Bad Responses //
+        if(!(optionalUser.isPresent())){
+            throw new EmailNotFoundException(String.format("Invalid Email", emailAuthDTO.getEmail()));
+        }
+
+//        UserEntity user =  optionalUser.get();
+//        RecoveryTokenEntity recoveryTokenEntity = new RecoveryTokenEntity();
+//        recoveryTokenEntity.setUserEntity(user);
+//        recoveryTokenEntity.setCreatedAt(OffsetDateTime.now());
+//        recoveryTokenEntity.setToken();
+
     }
 }

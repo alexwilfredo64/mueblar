@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.backendmueblar.modules.auth.RecoveryTokenEntity;
+import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
 import project.backendmueblar.modules.interactions.CollectionEntity;
 import project.backendmueblar.modules.interactions.VisualizationMetricsEntity;
 import project.backendmueblar.modules.logEntry.LogsEntity;

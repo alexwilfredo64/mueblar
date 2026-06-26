@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
 import project.backendmueblar.modules.auth.services.AuthService;
@@ -32,5 +33,12 @@ public class RestControllerAuth {
         mapJWT.put("token", tokenJWT);
 
         return ResponseEntity.status(200).body(mapJWT);
+    }
+
+    @PostMapping(value = "/recovery-email", consumes = {"application/json","application/xml"})
+    public ResponseEntity<?> recoveryAccount(@Valid @RequestBody EmailAuthDTO emailAuthDTO) {
+        authService.validateWithEmail(emailAuthDTO);
+
+        return ResponseEntity.status(200).body("Message (Email) sent successfully");
     }
 }

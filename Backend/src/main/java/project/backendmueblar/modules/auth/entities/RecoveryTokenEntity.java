@@ -1,4 +1,4 @@
-package project.backendmueblar.modules.auth;
+package project.backendmueblar.modules.auth.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
