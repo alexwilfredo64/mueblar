@@ -55,7 +55,12 @@ export default function RegisterPage() {
       await login(email, password)
       navigate('/')
     } catch (err) {
-      setErrors({ server: err.message })
+      const status = err.status
+      if (status === 409) setErrors({ server: 'Ya existe una cuenta con ese correo.' })
+      else if (status === 400) setErrors({ server: 'Revisá los datos ingresados e intentá de nuevo.' })
+      else if (status === 403) setErrors({ server: 'No tenés permisos para registrarte.' })
+      else if (status >= 500) setErrors({ server: 'Error del servidor. Intentá de nuevo más tarde.' })
+      else setErrors({ server: err.message || 'Error al crear la cuenta.' })
     }
   }
 

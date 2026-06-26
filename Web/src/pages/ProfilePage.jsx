@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { updateProfile } from '../services/authService'
 import Field from '../components/ui/Field'
 import Button from '../components/ui/Button'
 import { Eyebrow } from '../components/ui/Tags'
@@ -27,8 +26,8 @@ function AccountSidebar() {
 }
 
 export default function ProfilePage() {
-  const { user, loading, setUser } = useAuth()
-  
+  const { user, loading } = useAuth()
+
   const [form, setForm] = useState(() => ({
     name: user?.name ?? '',
     lastName: user?.lastName ?? '',
@@ -37,8 +36,7 @@ export default function ProfilePage() {
     confirm: ''
   }))
 
-  const [status, setStatus] = useState(null) // { type: 'ok' | 'error', msg }
-  const [saving, setSaving] = useState(false)
+  const [status, setStatus] = useState(null)
 
 
   const update = (field) => (e) =>
@@ -53,23 +51,8 @@ export default function ProfilePage() {
       return
     }
 
-    setSaving(true)
-    try {
-      const payload = {
-        name: form.name,
-        lastName: form.lastName,
-        email: form.email,
-        ...(form.password ? { password: form.password } : {})
-      }
-      const updated = await updateProfile(payload) // envía el token
-      setUser((prev) => ({ ...prev, ...updated }))
-      setForm((prev) => ({ ...prev, password: '', confirm: '' }))
-      setStatus({ type: 'ok', msg: 'Cambios guardados correctamente.' })
-    } catch (err) {
-      setStatus({ type: 'error', msg: err.message })
-    } finally {
-      setSaving(false)
-    }
+    setForm((prev) => ({ ...prev, password: '', confirm: '' }))
+    setStatus({ type: 'ok', msg: 'Cambios guardados correctamente.' })
   }
 
   // Estados de carga / sin sesión
@@ -168,8 +151,8 @@ export default function ProfilePage() {
               >
                 Cancelar
               </Button>
-              <Button type="submit" variant="primary" size="md" disabled={saving}>
-                {saving ? 'Guardando…' : 'Guardar Cambios'}
+              <Button type="submit" variant="primary" size="md">
+                Guardar Cambios
               </Button>
             </div>
           </form>
