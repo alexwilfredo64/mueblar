@@ -1,21 +1,24 @@
 package project.backendmueblar.modules.auth.services;
 
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.*;
+import project.backendmueblar.modules.auth.repositories.RepositoryRecoveryToken;
+import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
+import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
 import project.backendmueblar.modules.users.entities.RoleEntity;
 import project.backendmueblar.modules.users.entities.UserEntity;
 import project.backendmueblar.modules.users.repositories.RepositoryPermission_X_Role;
 import project.backendmueblar.modules.users.repositories.RepositoryRole;
 import project.backendmueblar.modules.users.repositories.RepositoryUser;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +28,10 @@ public class AuthService {
     private final RepositoryRole repositoryRole;
     private final PasswordEncoder passwordEncoder;
     private final RepositoryPermission_X_Role repositoryPermission_X_Role;
+    private final RepositoryRecoveryToken repositoryRecoveryToken;
+
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     @Transactional
     public void registerUser(UserCreateDTO userCreateDTO){
@@ -82,5 +88,33 @@ public class AuthService {
                 ));
 
         return jwtService.generateToken(user, endpointsAndPermissionsMap);
+    }
+
+    @Transactional
+    public void validateWithEmail(EmailAuthDTO emailAuthDTO) {
+        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
+
+        // Bad Responses //
+        if(!(optionalUser.isPresent())){
+            throw new EmailNotFoundException(String.format("Email not found", emailAuthDTO.getEmail()));
+        }
+
+        UserEntity user = optionalUser.get();
+        RecoveryTokenEntity recoveryTokenEntity = new RecoveryTokenEntity();
+
+        recoveryTokenEntity.setUserEntity(user);
+        recoveryTokenEntity.setCreatedAt(OffsetDateTime.now());
+
+        recoveryTokenEntity.setToken(generateTokenRecovery());
+
+        System.out.println(recoveryTokenEntity.getToken());
+
+        repositoryRecoveryToken.save(recoveryTokenEntity);
+        emailService.sendRecoveryEmail(user.getEmail(), recoveryTokenEntity.getToken());
+    }
+
+    private static String generateTokenRecovery(){
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().replace("-", "");
     }
 }
