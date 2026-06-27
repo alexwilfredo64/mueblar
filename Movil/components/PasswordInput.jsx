@@ -1,32 +1,25 @@
 import { View, Text, TextInput, Pressable } from 'react-native'
-
+import {useState} from 'react'
 import { EyeIcon, EyeSlashedIcon } from './Icons'
 
 
-export default function PasswordInput({
-    hidden,
-    toggleHidden,
-    password,
-    onChangeText,
-    placeholder,
-    textInputClass = "",
-    inputContainerClass = "",
-    toggleIconClass
-}) {
+export default function PasswordInput({ title, value, onChangetext }) {
+    const [hidden, toggleHidden] = useState(true)
+    
     return (
         <View>
-            <Text className={``}>Contraseña</Text>
-            <View className={inputContainerClass}>
+            <Text className="">{title}</Text>
+            <View className="w-full flex-row items-center border-b-2 border-b-white  text-white">
                 <TextInput
                     secureTextEntry={hidden}
-                    onChangeText={onChangeText}
-                    value={password}
-                    className={textInputClass}
-                    placeholder={placeholder}
+                    onChangeText={onChangetext}
+                    value={value}
+                    className="flex-1 px-3"
+                    placeholder='*************'
                 />
                 <Pressable
-                    onPress={ toggleHidden}
-                    className={toggleIconClass}
+                    onPress={ () => toggleHidden(prev => !prev)}
+                    className="w-12 justify-center px-2 active:opacity-50"
                 >
                     {
                         hidden
