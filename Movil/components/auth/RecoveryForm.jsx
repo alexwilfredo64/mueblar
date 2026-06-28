@@ -45,7 +45,7 @@ export default function RecoveryForm() {
             render={({ field: { onChange, onBlur, value } }) => (
               <UnderlineField
                 label="Correo electrónico"
-                placeholder="melvin.dominguez@unah.hn"
+                placeholder="wombat.reyes@email.comg"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
