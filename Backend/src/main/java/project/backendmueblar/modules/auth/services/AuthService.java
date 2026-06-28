@@ -1,11 +1,12 @@
 package project.backendmueblar.modules.auth.services;
 
-import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.*;
+import project.backendmueblar.modules.auth.dtos.ResetPasswordDTO;
 import project.backendmueblar.modules.auth.repositories.RepositoryRecoveryToken;
 import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
 import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
@@ -18,6 +19,7 @@ import project.backendmueblar.modules.users.repositories.RepositoryRole;
 import project.backendmueblar.modules.users.repositories.RepositoryUser;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,9 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final EmailService emailService;
+
+    @Value("${EXPIRATION_TIME_RECOVERY_TOKEN}")
+    private long expirationTimeRecoveryToken;
 
     @Transactional
     public void registerUser(UserCreateDTO userCreateDTO){
@@ -58,7 +63,7 @@ public class AuthService {
         repositoryUser.save(userEntity);
     }
 
-    public String loginUser(UserAuthDTO userAuthDTO){
+    public String authenticationUser(UserAuthDTO userAuthDTO){
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(userAuthDTO.getEmail());
 
         // Bad Responses //
@@ -91,7 +96,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void validateWithEmail(EmailAuthDTO emailAuthDTO) {
+    public void recoveryEmail(EmailAuthDTO emailAuthDTO) {
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
 
         // Bad Responses //
@@ -110,7 +115,44 @@ public class AuthService {
         System.out.println(recoveryTokenEntity.getToken());
 
         repositoryRecoveryToken.save(recoveryTokenEntity);
-        emailService.sendRecoveryEmail(user.getEmail(), recoveryTokenEntity.getToken());
+        emailService.sendRecoveryEmail(user.getEmail(), recoveryTokenEntity.getToken(), user.getUserId().toString());
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        Optional<RecoveryTokenEntity> optionalRecoveryToken = repositoryRecoveryToken.findByToken(resetPasswordDTO.getTokenReset());
+        if(!(optionalRecoveryToken.isPresent())){
+            throw new RecoveryTokenNotFoundException("Recovery Token not found");
+        }
+
+        RecoveryTokenEntity recoveryTokenEntity = optionalRecoveryToken.get();
+
+        OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
+        if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
+            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+        }
+
+        UserEntity userEntity = recoveryTokenEntity.getUserEntity();
+        if(!(userEntity.getUserId().equals(resetPasswordDTO.getId()))) {
+            throw new UserIDNotMatchException("El usuario no tiene permiso para realizar esta recovery / El usuario no existe");
+        }
+
+        userEntity.setPasswordHash(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        repositoryRecoveryToken.delete(recoveryTokenEntity);
+    }
+
+    public void validateToken(String verificationToken) {
+        Optional<RecoveryTokenEntity> optionalRecoveryToken = repositoryRecoveryToken.findByToken(verificationToken);
+        if(!(optionalRecoveryToken.isPresent())){
+            throw new RecoveryTokenNotFoundException("Recovery Token not found");
+        }
+
+        RecoveryTokenEntity recoveryTokenEntity = optionalRecoveryToken.get();
+
+        OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
+        if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
+            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+        }
     }
 
     private static String generateTokenRecovery(){
