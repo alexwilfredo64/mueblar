@@ -59,14 +59,15 @@ export const registerUser = (name, lastName, email, password) =>
 
 export const recoveryEmail = (email) =>
   request('/api/auth/recovery-email', {
-    skipAuth: true,
     method: 'POST',
     body: JSON.stringify({ email })
   })
 
-export const resetPassword = (email, password) =>
+export const resetPassword = (id, password, tokenReset) =>
   request('/api/auth/reset-password', {
-    skipAuth: true,
     method: 'POST',
-    body: JSON.stringify({ email, password })
-  })
+    body: JSON.stringify({ id, password, tokenReset })
+  })  
+
+export const verifyToken = (token) =>
+  request(`/api/auth/token-verification/${token}`)
