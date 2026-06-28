@@ -1,16 +1,15 @@
 package project.backendmueblar.modules.auth.services;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.*;
-import project.backendmueblar.modules.auth.dtos.ResetPasswordDTO;
+import project.backendmueblar.modules.auth.dtos.*;
 import project.backendmueblar.modules.auth.repositories.RepositoryRecoveryToken;
-import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
-import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
-import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
 import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
 import project.backendmueblar.modules.users.entities.RoleEntity;
 import project.backendmueblar.modules.users.entities.UserEntity;
@@ -39,7 +38,7 @@ public class AuthService {
     private long expirationTimeRecoveryToken;
 
     @Transactional
-    public void registerUser(UserCreateDTO userCreateDTO){
+    public void registerUser(@NonNull UserCreateDTO userCreateDTO){
         Optional<UserEntity> user = repositoryUser.findByEmail(userCreateDTO.getEmail());
 
        // Bad Responses //
@@ -63,7 +62,7 @@ public class AuthService {
         repositoryUser.save(userEntity);
     }
 
-    public String authenticationUser(UserAuthDTO userAuthDTO){
+    public String authenticationUser(UserAuthDTO userAuthDTO, Long expirationTime){
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(userAuthDTO.getEmail());
 
         // Bad Responses //
@@ -92,7 +91,7 @@ public class AuthService {
                         row -> ((Number) row[1]).intValue()
                 ));
 
-        return jwtService.generateToken(user, endpointsAndPermissionsMap);
+        return jwtService.generateToken(user, endpointsAndPermissionsMap, expirationTime);
     }
 
     @Transactional
@@ -159,4 +158,10 @@ public class AuthService {
         UUID uuid = UUID.randomUUID();
         return uuid.toString().replace("-", "");
     }
+
+//    public Integer getPermissionsOfAnEndpoint(String authHeader, UrlDTO urlDTO) {
+//        String jwt = authHeader.substring(7);
+//
+//
+//    }
 }

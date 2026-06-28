@@ -21,7 +21,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login","/api/auth/recovery-email", "/api/auth/reset-password", "/token-verification/{token}" ).permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/mobile/login","/api/auth/recovery-email", "/api/auth/reset-password", "/token-verification/{token}" ).permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
