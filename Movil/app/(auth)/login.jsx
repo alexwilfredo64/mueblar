@@ -1,11 +1,10 @@
-import { View, Text } from "react-native"
-import { Link } from "expo-router"
+import AuthScreen from '../../components/auth/AuthScreen'
+import LoginForm from '../../components/auth/LoginForm'
 
-export default function Login () {
-    return (
-        <View className="flex-1 bg-slate-600 items-center justify-center">
-            <Text> Login </Text>
-            <Link href="/register"> Registrarse</Link>
-        </View>
-    )
+export default function Login() {
+  return (
+    <AuthScreen contentClassName="justify-center">
+      <LoginForm />
+    </AuthScreen>
+  )
 }

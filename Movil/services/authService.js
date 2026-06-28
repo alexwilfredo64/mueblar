@@ -1,6 +1,6 @@
 
 import * as SecureStore from 'expo-secure-store';
-const BASE_URL =  ''
+const BASE_URL =  'http://192.168.0.3:8080'
 
 async function saveSessionToken(token) {
   try {
@@ -76,6 +76,7 @@ export const loginUser = async (email, password) => {
     body: JSON.stringify({ email, password })
   })
   saveSessionToken(data.token)
+
   return data
 }
 

@@ -1,9 +1,29 @@
-import { ActivityIndicator, View } from 'react-native';
+import { useEffect } from 'react'
+import { ActivityIndicator, View } from 'react-native'
+import { useRouter } from 'expo-router'
+
+import { COLORS } from '../constants/theme'
+import { isAuthenticated } from '../services/authService'
+
 
 export default function Index() {
-    return (
-        <View className="flex-1 items-center justify-center bg-slate-900">
-            <ActivityIndicator size="large" color="#4f46e5" />
-        </View>
-    );
+  const router = useRouter()
+
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      const authed = await isAuthenticated()
+      if (!active) return
+      router.replace(authed ? '/(main)/home' : '/(auth)/login')
+    })()
+    return () => {
+      active = false
+    }
+  }, [router])
+
+  return (
+    <View className="flex-1 items-center justify-center bg-stone-50 dark:bg-surface">
+      <ActivityIndicator size="large" color={COLORS.copper} />
+    </View>
+  )
 }
