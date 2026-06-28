@@ -5,11 +5,6 @@ import { COLORS } from '../../constants/theme'
 import { EyeIcon, EyeSlashedIcon } from '../Icons'
 import FieldLabel from './FieldLabel'
 
-/**
- * Campo de contraseña con etiqueta, subrayado y botón de mostrar/ocultar.
- * El único estado interno es la visibilidad del texto; el valor lo controla
- * react-hook-form desde afuera.
- */
 export default function PasswordField({
   label,
   error,

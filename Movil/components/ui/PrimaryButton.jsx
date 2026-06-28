@@ -2,9 +2,6 @@ import { useState } from 'react'
 import { Animated, Pressable, Text, ActivityIndicator } from 'react-native'
 
 /**
- * Botón principal en forma de píldora con micro-interacción de "press"
- * (escala con Animated + useNativeDriver, sin impacto de rendimiento).
- *
  * Variantes:
  *  - "solid"   → relleno cobre (acción primaria, ej. REGISTRARSE).
  *  - "outline" → solo borde (acción secundaria, ej. CANCELAR).

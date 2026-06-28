@@ -3,11 +3,6 @@ import { View, TextInput, Text } from 'react-native'
 import { COLORS } from '../../constants/theme'
 import FieldLabel from './FieldLabel'
 
-/**
- * Campo de texto con etiqueta superior y subrayado inferior (estilo de los
- * formularios de auth en los mockups). Es controlado: recibe value/onChangeText
- * desde react-hook-form, por lo que no maneja estado interno.
- */
 export default function UnderlineField({
   label,
   error,

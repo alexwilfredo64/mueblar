@@ -4,10 +4,6 @@ import { Animated, Pressable } from 'react-native'
 import { useTheme } from '../../context/ThemeContext'
 import { SunIcon, MoonIcon } from '../Icons'
 
-/**
- * Botón para alternar entre modo claro y oscuro. Aplica un giro sutil al
- * cambiar (Animated nativo) y delega la persistencia en ThemeContext.
- */
 export default function ThemeToggle({ className = '' }) {
   const { isDark, toggleTheme } = useTheme()
   const [spin] = useState(() => new Animated.Value(0))

@@ -70,7 +70,7 @@ async function request(path, options = {}) {
 export const isAuthenticated = async () => ( await getSessionToken() )
 
 export const loginUser = async (email, password) => {
-  const data = await request('/api/auth/login', {
+  const data = await request('/api/auth/mobile/login', {
     skipAuth: true,
     method: 'POST',
     body: JSON.stringify({ email, password })
