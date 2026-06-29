@@ -1,7 +1,6 @@
 package project.backendmueblar.modules.auth.services;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +66,7 @@ public class AuthService {
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Invalid Email", userAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Invalid Email: %s", userAuthDTO.getEmail()));
         }
         if (!passwordEncoder.matches(userAuthDTO.getPassword(), optionalUser.get().getPasswordHash())) {
             throw new PasswordNotMatchWithUserException("Incorrect Password");
@@ -100,7 +99,7 @@ public class AuthService {
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Email not found", emailAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Email '%s' was not found", emailAuthDTO.getEmail()));
         }
 
         UserEntity user = optionalUser.get();
@@ -159,9 +158,24 @@ public class AuthService {
         return uuid.toString().replace("-", "");
     }
 
-//    public Integer getPermissionsOfAnEndpoint(String authHeader, UrlDTO urlDTO) {
-//        String jwt = authHeader.substring(7);
-//
-//
-//    }
+    public Map<String, Integer> extractEndpointAndPermission(String authHeader, UrlDTO urlDTO) {
+        if(authHeader == null && !authHeader.startsWith("Bearer ")){
+            throw new UserDisabledException("Disabled User, not authorized");
+        }
+        String jwt = authHeader.substring(7);
+
+        // Returns a Map ({"Endpoint": Integer.class}) //
+        System.out.print(jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl()));
+
+        return jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl());
+    }
+
+    public Map<String, Integer> extractEndpointAndPermission(String authHeader, String url) {
+        if(authHeader == null && !authHeader.startsWith("Bearer ")){
+            throw new UserDisabledException("Disabled User, not authorized");
+        }
+        String jwt = authHeader.substring(7);
+
+        return jwtService.extractEndpointAndPermission(jwt, url);
+    }
 }

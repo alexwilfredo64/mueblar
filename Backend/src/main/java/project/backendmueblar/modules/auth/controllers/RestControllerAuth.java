@@ -69,13 +69,12 @@ public class RestControllerAuth {
     }
 
     @PostMapping(value = "/permits", consumes = "application/json")
-    public ResponseEntity<Map<String, Integer>> getPermissionsAssociatedEndpoint(
-            @RequestHeader String authHeader,
+    public ResponseEntity<Map<String, Integer>> getPermissionsFromEndpoint(
+            @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UrlDTO urlDTO) {
         Map<String, Integer> map = new HashMap<>();
-        map.put("permits", authService.getPermissionsOfAnEndpoint(authHeader, urlDTO));
+        map.put("permits", authService.getPermissionsOfAnEndpoint(authHeader, urlDTO).get(urlDTO.getUrl()));
 
         return ResponseEntity.status(200).body(map);
-
     }
 }

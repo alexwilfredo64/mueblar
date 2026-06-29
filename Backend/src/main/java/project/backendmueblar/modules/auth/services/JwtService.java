@@ -47,12 +47,17 @@ public class JwtService {
         }
     }
 
-    public String extractEmail(String token) {
+    public String extractEmail(String authHeader) {
+        String token = authHeader.substring(7);
         Claims claims = Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
         return claims.getSubject();
     }
 
-    public Map<String, Integer> extractEndpointsAndPermissions(String token, String endpoint) {
+    // Se retornara un Mapa en caso de que se necesite posteriormente
+    public Map<String, Integer> extractEndpointAndPermission(String token, String endpoint) {
+        // Private Method
+        validateJWTIntegrity(token);
+
         Claims claims = Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
         Integer specificPermissionInteger = claims.get(String.format("%s", endpoint), Integer.class);
 
@@ -64,6 +69,5 @@ public class JwtService {
         endpointAndPermissionMap.put(endpoint, specificPermissionInteger);
 
         return endpointAndPermissionMap;
-
     }
 }
