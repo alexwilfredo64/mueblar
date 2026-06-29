@@ -176,3 +176,14 @@ vite.config.ts.timestamp-*
 
 # Project files
 *.iws
+
+# Maven build outputs
+target/
+
+# Gradle build outputs
+build/
+.gradle/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
