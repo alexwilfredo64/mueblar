@@ -9,18 +9,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.backendmueblar.modules.auth.services.AuthService;
 import project.backendmueblar.modules.auth.services.JwtService;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final AuthService authService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -32,32 +29,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String urlRequested =  request.getRequestURI();
         String httpMethod = request.getMethod().toUpperCase();
 
-        String userEmail = jwtService.extractEmail(authHeader);
-
-        Map<String, Integer> endpointPermissionMap = authService.extractEndpointAndPermission(authHeader, urlRequested);
-
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (!urlHasEnoughPermissions(endpointPermissionMap, urlRequested, httpMethod)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acceso denegado: No tienes los permisos necesarios para esta acción.");
-                return;
-            }
-            if (jwtService.validateJWTIntegrity(authHeader)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userEmail, null);
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            String userEmail = jwtService.extractEmail(authHeader);
+            Map<String, Integer> endpointPermissionMap = jwtService.extractEndpointAndPermission(authHeader.substring(7), urlRequested);
+            if(endpointPermissionMap.get(urlRequested) != null){
+                if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    if (!urlHasEnoughPermissionsAPI(endpointPermissionMap, urlRequested, httpMethod)) {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acceso denegado: No tienes los permisos necesarios para esta acción.");
+                        return;
+                    }
+                    if (jwtService.validateJWTIntegrity(authHeader.substring(7))) {
+                        UsernamePasswordAuthenticationToken contextAuthenticationToken = new UsernamePasswordAuthenticationToken(userEmail, null);
+                        SecurityContextHolder.getContext().setAuthentication(contextAuthenticationToken);
+                    }
+                }
             }
         }
         filterChain.doFilter(request, response);
-
-        private boolean urlHasEnoughPermissions(Map<String, Integer> endpointPermissionMap, String url, String httpMethod) {
-            Integer permissionsInBits = endpointPermissionMap.get(url);
-            int requiredBit = switch (httpMethod) {
-                case "GET" -> 1;    // ACCESO
-                case "POST" -> 2;   // CREACION
-                case "PUT" -> 4;    // MODIFICACION
-                case "DELETE" -> 8; // ELIMINACION
-                default -> 0;       // Cualquier otro método no lo permitimos por defecto
-            };
-            return (permissionsInBits & requiredBit) == requiredBit;
-        }
     }
+
+    private boolean urlHasEnoughPermissionsAPI(Map<String, Integer> endpointPermissionMap, String urlRequested, String httpMethod) {
+        Integer permissionsInBits = endpointPermissionMap.get(urlRequested);
+        int requiredBit = switch (httpMethod) {
+            case "GET" -> 8;
+            case "POST" -> 4;
+            case "DELETE" -> 2;
+            case "PUT" -> 1;
+            default -> 0;
+        };
+        return (permissionsInBits & requiredBit) == requiredBit;
+    }
+
 }

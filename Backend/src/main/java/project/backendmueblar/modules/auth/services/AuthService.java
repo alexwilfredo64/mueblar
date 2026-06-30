@@ -94,7 +94,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void recoveryEmail(EmailAuthDTO emailAuthDTO) {
+    public void recoveryEmailAndGenerateToken(EmailAuthDTO emailAuthDTO) {
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
 
         // Bad Responses //
@@ -127,12 +127,12 @@ public class AuthService {
 
         OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
         if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
-            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+            throw new RecoveryTokenIsExpired("The deadline for changing the password has passed.");
         }
 
         UserEntity userEntity = recoveryTokenEntity.getUserEntity();
         if(!(userEntity.getUserId().equals(resetPasswordDTO.getId()))) {
-            throw new UserIDNotMatchException("El usuario no tiene permiso para realizar esta recovery / El usuario no existe");
+            throw new UserIDNotMatchException("The user does not have permission to perform this recovery / The user does not exist.");
         }
 
         userEntity.setPasswordHash(passwordEncoder.encode(resetPasswordDTO.getPassword()));
@@ -149,7 +149,7 @@ public class AuthService {
 
         OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
         if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
-            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+            throw new RecoveryTokenIsExpired("The deadline for changing the password has passed.");
         }
     }
 
@@ -164,18 +164,10 @@ public class AuthService {
         }
         String jwt = authHeader.substring(7);
 
-        // Returns a Map ({"Endpoint": Integer.class}) //
-        System.out.print(jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl()));
+        if (jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl()).get(urlDTO.getUrl()) == null) {
+            throw new EndpointNotExistForUser("URL / API does not exist");
+        }
 
         return jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl());
-    }
-
-    public Map<String, Integer> extractEndpointAndPermission(String authHeader, String url) {
-        if(authHeader == null && !authHeader.startsWith("Bearer ")){
-            throw new UserDisabledException("Disabled User, not authorized");
-        }
-        String jwt = authHeader.substring(7);
-
-        return jwtService.extractEndpointAndPermission(jwt, url);
     }
 }

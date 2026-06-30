@@ -51,8 +51,8 @@ public class RestControllerAuth {
     }
 
     @PostMapping(value = "/recovery-email", consumes = "application/json")
-    public ResponseEntity<?> recoveryEmail(@Valid @RequestBody EmailAuthDTO emailAuthDTO) {
-        authService.recoveryEmail(emailAuthDTO);
+    public ResponseEntity<?> recoveryEmailAndGenerateToken(@Valid @RequestBody EmailAuthDTO emailAuthDTO) {
+        authService.recoveryEmailAndGenerateToken(emailAuthDTO);
         return ResponseEntity.status(200).body("Message (Email) sent successfully");
     }
 
@@ -73,8 +73,12 @@ public class RestControllerAuth {
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UrlDTO urlDTO) {
         Map<String, Integer> map = new HashMap<>();
-        map.put("permits", authService.getPermissionsOfAnEndpoint(authHeader, urlDTO).get(urlDTO.getUrl()));
+
+        System.out.println(urlDTO.getUrl());
+
+        map.put("permits", authService.extractEndpointAndPermission(authHeader, urlDTO).get(urlDTO.getUrl()));
 
         return ResponseEntity.status(200).body(map);
     }
+
 }

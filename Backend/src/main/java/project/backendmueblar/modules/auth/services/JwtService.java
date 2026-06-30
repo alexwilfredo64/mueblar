@@ -55,15 +55,12 @@ public class JwtService {
 
     // Se retornara un Mapa en caso de que se necesite posteriormente
     public Map<String, Integer> extractEndpointAndPermission(String token, String endpoint) {
+
         // Private Method
         validateJWTIntegrity(token);
 
         Claims claims = Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
         Integer specificPermissionInteger = claims.get(String.format("%s", endpoint), Integer.class);
-
-        if (specificPermissionInteger == null) {
-            throw new EndpointNotExistForUser("URL / API does not exist");
-        }
 
         Map<String, Integer> endpointAndPermissionMap = new HashMap<>();
         endpointAndPermissionMap.put(endpoint, specificPermissionInteger);
