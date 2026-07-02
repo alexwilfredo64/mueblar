@@ -1,4 +1,4 @@
-package project.backendmueblar.exception;
+package project.backendmueblar.exception.auth;
 
 public class RecoveryTokenIsExpired extends RuntimeException {
     public RecoveryTokenIsExpired(String message) {

@@ -24,15 +24,15 @@ public class RestControllerAuth {
     private long expirationTimeApp;
 
     @PostMapping(value = "/register", consumes = "application/json")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        authService.registerUser(userCreateDTO);
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+        authService.registerUser(userCreateRequestDTO);
 
         return ResponseEntity.status(201).body("User registered successfully");
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<Map<String, String>> authenticationUser(@Valid @RequestBody UserAuthDTO userAuthDTO) {
-        String tokenJWT = authService.authenticationUser(userAuthDTO, expirationTime);
+    public ResponseEntity<Map<String, String>> authenticationUser(@Valid @RequestBody UserAuthRequestDTO userAuthRequestDTO) {
+        String tokenJWT = authService.authenticationUser(userAuthRequestDTO, expirationTime);
 
         Map<String, String> mapJWT = new HashMap<>();
         mapJWT.put("token", tokenJWT);
@@ -41,8 +41,8 @@ public class RestControllerAuth {
     }
 
     @PostMapping(value = "/mobile/login", consumes = "application/json")
-    public ResponseEntity<Map<String, String>> authenticationUserApp(@Valid @RequestBody UserAuthDTO userAuthDTO) {
-        String tokenJWT = authService.authenticationUser(userAuthDTO, expirationTimeApp);
+    public ResponseEntity<Map<String, String>> authenticationUserApp(@Valid @RequestBody UserAuthRequestDTO userAuthRequestDTO) {
+        String tokenJWT = authService.authenticationUser(userAuthRequestDTO, expirationTimeApp);
 
         Map<String, String> mapJWT = new HashMap<>();
         mapJWT.put("token", tokenJWT);
@@ -51,32 +51,30 @@ public class RestControllerAuth {
     }
 
     @PostMapping(value = "/recovery-email", consumes = "application/json")
-    public ResponseEntity<?> recoveryEmailAndGenerateToken(@Valid @RequestBody EmailAuthDTO emailAuthDTO) {
-        authService.recoveryEmailAndGenerateToken(emailAuthDTO);
+    public ResponseEntity<?> recoveryEmailAndGenerateToken(@Valid @RequestBody EmailAuthRequestDTO emailAuthRequestDTO) {
+        authService.recoveryEmailAndGenerateToken(emailAuthRequestDTO);
         return ResponseEntity.status(200).body("Message (Email) sent successfully");
     }
 
     @PostMapping(value = "/reset-password", consumes = "application/json")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
-        authService.resetPassword(resetPasswordDTO);
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO) {
+        authService.resetPassword(resetPasswordRequestDTO);
         return ResponseEntity.status(200).body("Password reset successfully");
     }
 
     @GetMapping(value = "/token-verification/{token}")
     public ResponseEntity<?> getTokenVerification(@PathVariable("token") String verificationToken) {
-        authService.validateToken(verificationToken);
+        authService.getTokenVerification(verificationToken);
         return ResponseEntity.status(200).build();
     }
 
     @PostMapping(value = "/permits", consumes = "application/json")
     public ResponseEntity<Map<String, Integer>> getPermissionsFromEndpoint(
             @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody UrlDTO urlDTO) {
+            @Valid @RequestBody UrlRequestDTO urlRequestDTO) {
+
         Map<String, Integer> map = new HashMap<>();
-
-        System.out.println(urlDTO.getUrl());
-
-        map.put("permits", authService.extractEndpointAndPermission(authHeader, urlDTO).get(urlDTO.getUrl()));
+        map.put("permits", authService.extractEndpointAndPermission(authHeader, urlRequestDTO).get(urlRequestDTO.getUrl()));
 
         return ResponseEntity.status(200).body(map);
     }

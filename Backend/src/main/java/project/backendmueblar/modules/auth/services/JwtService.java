@@ -8,8 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import project.backendmueblar.exception.EndpointNotExistForUser;
-import project.backendmueblar.exception.ViolatedJWTIntegrity;
+import project.backendmueblar.exception.auth.ViolatedJWTIntegrity;
 import project.backendmueblar.modules.users.entities.UserEntity;
 import javax.crypto.SecretKey;
 import java.util.Date;

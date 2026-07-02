@@ -6,7 +6,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import project.backendmueblar.exception.*;
+import project.backendmueblar.exception.auth.*;
 import project.backendmueblar.modules.auth.dtos.*;
 import project.backendmueblar.modules.auth.repositories.RepositoryRecoveryToken;
 import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
@@ -37,12 +37,12 @@ public class AuthService {
     private long expirationTimeRecoveryToken;
 
     @Transactional
-    public void registerUser(@NonNull UserCreateDTO userCreateDTO){
-        Optional<UserEntity> user = repositoryUser.findByEmail(userCreateDTO.getEmail());
+    public void registerUser(@NonNull UserCreateRequestDTO userCreateRequestDTO){
+        Optional<UserEntity> user = repositoryUser.findByEmail(userCreateRequestDTO.getEmail());
 
        // Bad Responses //
         if(user.isPresent()){
-            throw new EmailAlreadyExistsException(String.format("User with email %s already exists", userCreateDTO.getEmail()));
+            throw new EmailAlreadyExistsException(String.format("User with email %s already exists", userCreateRequestDTO.getEmail()));
         }
         Optional<RoleEntity> roleEntity = repositoryRole.findByRoleName("Cliente");
         if(!(roleEntity.isPresent())){
@@ -51,24 +51,24 @@ public class AuthService {
 
         // Good Response
         UserEntity userEntity = new UserEntity();
-        userEntity.setEmail(userCreateDTO.getEmail());
-        userEntity.setFirstName(userCreateDTO.getName());
-        userEntity.setLastName(userCreateDTO.getLastName());
+        userEntity.setEmail(userCreateRequestDTO.getEmail());
+        userEntity.setFirstName(userCreateRequestDTO.getName());
+        userEntity.setLastName(userCreateRequestDTO.getLastName());
 
-        userEntity.setPasswordHash(passwordEncoder.encode(userCreateDTO.getPassword()));
+        userEntity.setPasswordHash(passwordEncoder.encode(userCreateRequestDTO.getPassword()));
         userEntity.setEnabled(true);
         userEntity.setRoleEntity(roleEntity.get());
         repositoryUser.save(userEntity);
     }
 
-    public String authenticationUser(UserAuthDTO userAuthDTO, Long expirationTime){
-        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(userAuthDTO.getEmail());
+    public String authenticationUser(UserAuthRequestDTO userAuthRequestDTO, Long expirationTime){
+        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(userAuthRequestDTO.getEmail());
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Invalid Email: %s", userAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Invalid Email: %s", userAuthRequestDTO.getEmail()));
         }
-        if (!passwordEncoder.matches(userAuthDTO.getPassword(), optionalUser.get().getPasswordHash())) {
+        if (!passwordEncoder.matches(userAuthRequestDTO.getPassword(), optionalUser.get().getPasswordHash())) {
             throw new PasswordNotMatchWithUserException("Incorrect Password");
         }
         if(!(optionalUser.get().getEnabled())){
@@ -94,12 +94,12 @@ public class AuthService {
     }
 
     @Transactional
-    public void recoveryEmailAndGenerateToken(EmailAuthDTO emailAuthDTO) {
-        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
+    public void recoveryEmailAndGenerateToken(EmailAuthRequestDTO emailAuthRequestDTO) {
+        Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthRequestDTO.getEmail());
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Email '%s' was not found", emailAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Email '%s' was not found", emailAuthRequestDTO.getEmail()));
         }
 
         UserEntity user = optionalUser.get();
@@ -117,8 +117,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
-        Optional<RecoveryTokenEntity> optionalRecoveryToken = repositoryRecoveryToken.findByToken(resetPasswordDTO.getTokenReset());
+    public void resetPassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
+        Optional<RecoveryTokenEntity> optionalRecoveryToken = repositoryRecoveryToken.findByToken(resetPasswordRequestDTO.getTokenReset());
         if(!(optionalRecoveryToken.isPresent())){
             throw new RecoveryTokenNotFoundException("Recovery Token not found");
         }
@@ -131,15 +131,15 @@ public class AuthService {
         }
 
         UserEntity userEntity = recoveryTokenEntity.getUserEntity();
-        if(!(userEntity.getUserId().equals(resetPasswordDTO.getId()))) {
+        if(!(userEntity.getUserId().equals(resetPasswordRequestDTO.getId()))) {
             throw new UserIDNotMatchException("The user does not have permission to perform this recovery / The user does not exist.");
         }
 
-        userEntity.setPasswordHash(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        userEntity.setPasswordHash(passwordEncoder.encode(resetPasswordRequestDTO.getPassword()));
         repositoryRecoveryToken.delete(recoveryTokenEntity);
     }
 
-    public void validateToken(String verificationToken) {
+    public void getTokenVerification(String verificationToken) {
         Optional<RecoveryTokenEntity> optionalRecoveryToken = repositoryRecoveryToken.findByToken(verificationToken);
         if(!(optionalRecoveryToken.isPresent())){
             throw new RecoveryTokenNotFoundException("Recovery Token not found");
@@ -158,16 +158,16 @@ public class AuthService {
         return uuid.toString().replace("-", "");
     }
 
-    public Map<String, Integer> extractEndpointAndPermission(String authHeader, UrlDTO urlDTO) {
+    public Map<String, Integer> extractEndpointAndPermission(String authHeader, UrlRequestDTO urlRequestDTO) {
         if(authHeader == null && !authHeader.startsWith("Bearer ")){
             throw new UserDisabledException("Disabled User, not authorized");
         }
         String jwt = authHeader.substring(7);
 
-        if (jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl()).get(urlDTO.getUrl()) == null) {
+        if (jwtService.extractEndpointAndPermission(jwt, urlRequestDTO.getUrl()).get(urlRequestDTO.getUrl()) == null) {
             throw new EndpointNotExistForUser("URL / API does not exist");
         }
 
-        return jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl());
+        return jwtService.extractEndpointAndPermission(jwt, urlRequestDTO.getUrl());
     }
 }

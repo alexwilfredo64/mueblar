@@ -29,7 +29,7 @@ public class ProductEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "dimensiones", columnDefinition = "jsonb", nullable = false)
-    private Map<String, Object> dimensions;
+    private Map<String, Double> dimensions;
 
     @Column(name = "habilitado", nullable = false)
     private Boolean enabled;

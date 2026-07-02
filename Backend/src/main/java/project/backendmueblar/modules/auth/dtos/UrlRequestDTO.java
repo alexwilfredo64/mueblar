@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UrlDTO {
+public class UrlRequestDTO {
     @NotBlank(message = "La URL es obligatoria. No se recibio")
     private String url;
 }

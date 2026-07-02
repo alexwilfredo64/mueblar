@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResetPasswordDTO {
+public class ResetPasswordRequestDTO {
     @NotNull(message = "El ID del Usuario es de caraceter obligatorio")
     private Long id;
 

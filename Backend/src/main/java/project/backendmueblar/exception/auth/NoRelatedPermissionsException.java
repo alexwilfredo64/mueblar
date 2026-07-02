@@ -1,4 +1,4 @@
-package project.backendmueblar.exception;
+package project.backendmueblar.exception.auth;
 
 public class NoRelatedPermissionsException extends RuntimeException {
     public NoRelatedPermissionsException(String message) {

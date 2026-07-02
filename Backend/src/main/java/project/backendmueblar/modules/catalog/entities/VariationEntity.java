@@ -22,7 +22,7 @@ import java.util.Map;
 public class VariationEntity {
     @Id
     @Column(name = "sku")
-    private String dku;
+    private String sku;
 
     @Column(name = "nombre_variacion", nullable = false)
     private String variationName;
