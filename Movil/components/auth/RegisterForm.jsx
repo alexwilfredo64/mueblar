@@ -150,7 +150,7 @@ export default function RegisterForm() {
 
       <View className="mt-6 flex-row justify-center">
         <Text className="text-stone-500 dark:text-stone-400">¿Ya tienes una cuenta? </Text>
-        <Link href="/login" >
+        <Link href="/view/login" >
           <Text className="font-semibold text-copper underline" >Iniciar sesión</Text>
         </Link>
       </View>
