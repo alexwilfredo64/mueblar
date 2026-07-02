@@ -20,7 +20,7 @@ public class EmailService {
             helper.setTo(recipientEmail);
             helper.setSubject("MueblAR - Recuperación de Contraseña");
 
-            String urlRecoveryPassword = "http://localhost:5173/reset-password/" + token + id;
+            String urlRecoveryPassword = "http://localhost:5173/reset-password/" + token + "/" + id;
             System.out.println(urlRecoveryPassword);
 
             String contenidoHtml =

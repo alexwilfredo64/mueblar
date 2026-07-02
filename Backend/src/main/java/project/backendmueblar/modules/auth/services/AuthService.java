@@ -2,15 +2,13 @@ package project.backendmueblar.modules.auth.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.backendmueblar.exception.*;
-import project.backendmueblar.modules.auth.dtos.ResetPasswordDTO;
+import project.backendmueblar.modules.auth.dtos.*;
 import project.backendmueblar.modules.auth.repositories.RepositoryRecoveryToken;
-import project.backendmueblar.modules.auth.dtos.EmailAuthDTO;
-import project.backendmueblar.modules.auth.dtos.UserAuthDTO;
-import project.backendmueblar.modules.auth.dtos.UserCreateDTO;
 import project.backendmueblar.modules.auth.entities.RecoveryTokenEntity;
 import project.backendmueblar.modules.users.entities.RoleEntity;
 import project.backendmueblar.modules.users.entities.UserEntity;
@@ -39,7 +37,7 @@ public class AuthService {
     private long expirationTimeRecoveryToken;
 
     @Transactional
-    public void registerUser(UserCreateDTO userCreateDTO){
+    public void registerUser(@NonNull UserCreateDTO userCreateDTO){
         Optional<UserEntity> user = repositoryUser.findByEmail(userCreateDTO.getEmail());
 
        // Bad Responses //
@@ -63,12 +61,12 @@ public class AuthService {
         repositoryUser.save(userEntity);
     }
 
-    public String authenticationUser(UserAuthDTO userAuthDTO){
+    public String authenticationUser(UserAuthDTO userAuthDTO, Long expirationTime){
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(userAuthDTO.getEmail());
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Invalid Email", userAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Invalid Email: %s", userAuthDTO.getEmail()));
         }
         if (!passwordEncoder.matches(userAuthDTO.getPassword(), optionalUser.get().getPasswordHash())) {
             throw new PasswordNotMatchWithUserException("Incorrect Password");
@@ -92,16 +90,16 @@ public class AuthService {
                         row -> ((Number) row[1]).intValue()
                 ));
 
-        return jwtService.generateToken(user, endpointsAndPermissionsMap);
+        return jwtService.generateToken(user, endpointsAndPermissionsMap, expirationTime);
     }
 
     @Transactional
-    public void recoveryEmail(EmailAuthDTO emailAuthDTO) {
+    public void recoveryEmailAndGenerateToken(EmailAuthDTO emailAuthDTO) {
         Optional<UserEntity> optionalUser = repositoryUser.findByEmail(emailAuthDTO.getEmail());
 
         // Bad Responses //
         if(!(optionalUser.isPresent())){
-            throw new EmailNotFoundException(String.format("Email not found", emailAuthDTO.getEmail()));
+            throw new EmailNotFoundException(String.format("Email '%s' was not found", emailAuthDTO.getEmail()));
         }
 
         UserEntity user = optionalUser.get();
@@ -129,12 +127,12 @@ public class AuthService {
 
         OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
         if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
-            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+            throw new RecoveryTokenIsExpired("The deadline for changing the password has passed.");
         }
 
         UserEntity userEntity = recoveryTokenEntity.getUserEntity();
         if(!(userEntity.getUserId().equals(resetPasswordDTO.getId()))) {
-            throw new UserIDNotMatchException("El usuario no tiene permiso para realizar esta recovery / El usuario no existe");
+            throw new UserIDNotMatchException("The user does not have permission to perform this recovery / The user does not exist.");
         }
 
         userEntity.setPasswordHash(passwordEncoder.encode(resetPasswordDTO.getPassword()));
@@ -151,12 +149,25 @@ public class AuthService {
 
         OffsetDateTime recoveryTokencreationDate = recoveryTokenEntity.getCreatedAt();
         if(recoveryTokencreationDate.plus(expirationTimeRecoveryToken, ChronoUnit.MILLIS).isBefore(OffsetDateTime.now())){
-            throw new RecoveryTokenIsExpired("El plazo para el cambio de contraseña ha sido sobrepasado.");
+            throw new RecoveryTokenIsExpired("The deadline for changing the password has passed.");
         }
     }
 
     private static String generateTokenRecovery(){
         UUID uuid = UUID.randomUUID();
         return uuid.toString().replace("-", "");
+    }
+
+    public Map<String, Integer> extractEndpointAndPermission(String authHeader, UrlDTO urlDTO) {
+        if(authHeader == null && !authHeader.startsWith("Bearer ")){
+            throw new UserDisabledException("Disabled User, not authorized");
+        }
+        String jwt = authHeader.substring(7);
+
+        if (jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl()).get(urlDTO.getUrl()) == null) {
+            throw new EndpointNotExistForUser("URL / API does not exist");
+        }
+
+        return jwtService.extractEndpointAndPermission(jwt, urlDTO.getUrl());
     }
 }
