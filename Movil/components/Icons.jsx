@@ -1,5 +1,5 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { COLORS } from '../constants/theme'
 
 export const EyeIcon = ({ size = 20, color = COLORS.iconMuted, ...props }) => (
@@ -26,6 +26,10 @@ export const ArrowLeftIcon = ({ size = 18, color = COLORS.copper, ...props }) =>
     <FontAwesome6 name="arrow-left" size={size} color={color} {...props} />
 )
 
+export const ArrowRightIcon = ({ size = 18, color = COLORS.copper, ...props }) => (
+    <FontAwesome6 name="arrow-right" size={size} color={color} {...props} />
+)
+
 export const ChevronDownIcon = ({ size = 14, color = COLORS.iconMuted, ...props }) => (
     <FontAwesome6 name="chevron-down" size={size} color={color} {...props} />
 )
@@ -36,4 +40,12 @@ export const ShieldKeyIcon = ({ size = 20, color = COLORS.copper, ...props }) =>
 
 export const SearchIcon = ({ size = 20, color = COLORS.copper, ...props }) => (
     <FontAwesome6 name="magnifying-glass" size={size} color={color} {...props} />
+)
+
+export const EmptyHeartIcon = ({ size = 20, color = COLORS.copper, ...props }) => (
+    <FontAwesome name="heart-o" size={size} color={color} {...props} />
+)
+
+export const FilledHeartIcon = ({ size = 20, color = COLORS.copper, ...props }) => (
+    <FontAwesome name="heart" size={size} color={color} {...props} />
 )

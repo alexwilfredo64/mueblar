@@ -15,6 +15,8 @@ export const COLORS = {
   cardDark: '#1f1c19',
   placeholder: '#8a817b',
   iconMuted: '#a8a29e',
+  stone100: '#f5f5f4',
+  stone900: '#1c1917',
 }
 
 /** Clave de almacenamiento seguro para la preferencia de tema. */

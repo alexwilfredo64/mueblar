@@ -37,9 +37,9 @@ export default function AuthScreen({
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-            flexGrow: 1,
-            paddingTop: insets.top + 12,
-            paddingBottom: insets.bottom + 24,
+                flexGrow: 1,
+                paddingTop: insets.top + 12,
+                paddingBottom: insets.bottom + 24,
             }}
         >
             {hasTopBar ? (

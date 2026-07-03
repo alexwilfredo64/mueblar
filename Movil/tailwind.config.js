@@ -17,6 +17,7 @@ module.exports = {
           dark: "#9c5e46",
           50: "#f6ece6",
         },
+        brown: "#1c1917",
         surface: "#161412",
         card: "#1f1c19",
       },
