@@ -1,7 +1,9 @@
-package project.backendmueblar.modules.catalog.dtos;
+package project.backendmueblar.modules.catalog.dtos.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import project.backendmueblar.modules.catalog.dtos.AttribTypeSummaryDTO;
+import project.backendmueblar.modules.catalog.dtos.VariationSummaryDTO;
 
 @Getter
 @Setter

@@ -1,9 +1,8 @@
-package project.backendmueblar.modules.catalog.dtos;
+package project.backendmueblar.modules.catalog.dtos.response;
 
 import lombok.Getter;
 import lombok.Setter;
-import project.backendmueblar.modules.catalog.entities.AttributeEntity;
-import project.backendmueblar.modules.catalog.entities.ThumbnailEntity;
+import project.backendmueblar.modules.catalog.dtos.AttributeSummaryDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -13,12 +12,12 @@ import java.util.Map;
 public class VariationResponseDTO {
     private String sku; //
     private String name; //
-    private Map<String, Object> instance_params; //
     private String model_3d; //
+    private String thumbnail; //
     private Integer price; //
     private Boolean top; //
     private Boolean enabled; //
-    private String thumbnail; //
+    private Map<String, Object> instance_params; //
     private List<String> imgs; //
     private List<AttributeSummaryDTO> atribs;
 }

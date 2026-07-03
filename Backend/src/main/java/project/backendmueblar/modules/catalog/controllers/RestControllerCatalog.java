@@ -1,15 +1,12 @@
 package project.backendmueblar.modules.catalog.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.backendmueblar.modules.catalog.dtos.ProductResponseDTO;
-import project.backendmueblar.modules.catalog.entities.CategoryEntity;
-import project.backendmueblar.modules.catalog.entities.VariationEntity;
+import project.backendmueblar.modules.catalog.dtos.request.ProductCreateRequestDTO;
+import project.backendmueblar.modules.catalog.dtos.response.ProductResponseDTO;
 import project.backendmueblar.modules.catalog.services.CatalogService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -18,9 +15,17 @@ public class RestControllerCatalog {
 
     private final CatalogService catalogService;
 
-    @GetMapping(value = "/{model}", consumes = "application/json")
+    @GetMapping(value = "/{model}", produces = "application/json")
     public ResponseEntity<?> getSpecificProduct(@PathVariable("model") String modelOfProduct, @RequestParam(required = false) boolean simpleVariation) {
         ProductResponseDTO specificProduct = catalogService.getSpecificProduct(modelOfProduct, simpleVariation);
-
+        return ResponseEntity.status(200).body(specificProduct);
     }
+
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<?> createProduct(
+            @Valid @RequestBody ProductCreateRequestDTO productCreateDTO) {
+        catalogService.createProductAndVariations(productCreateDTO);
+        return ResponseEntity.status(201).build();
+    }
+
 }
