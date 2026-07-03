@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import project.backendmueblar.modules.auth.services.JwtService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -39,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         return;
                     }
                     if (jwtService.validateJWTIntegrity(authHeader.substring(7))) {
-                        UsernamePasswordAuthenticationToken contextAuthenticationToken = new UsernamePasswordAuthenticationToken(userEmail, null);
+                        UsernamePasswordAuthenticationToken contextAuthenticationToken = new UsernamePasswordAuthenticationToken(userEmail, null, List.of());
                         SecurityContextHolder.getContext().setAuthentication(contextAuthenticationToken);
                     }
                 }
